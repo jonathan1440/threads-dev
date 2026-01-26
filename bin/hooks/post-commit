@@ -1,0 +1,55 @@
+#!/bin/bash
+# Git post-commit hook for Threads
+# Automatically creates a checkpoint after commits that modify significant files
+# Install: cp this file to .git/hooks/post-commit && chmod +x .git/hooks/post-commit
+
+# Find .threads directory
+find_threads_dir() {
+    local dir="$PWD"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -d "$dir/.threads" ]]; then
+            echo "$dir/.threads"
+            return 0
+        fi
+        dir="$(dirname "$dir")"
+    done
+    return 1
+}
+
+THREADS_DIR=$(find_threads_dir) || exit 0
+
+BIN_DIR="$(dirname "$THREADS_DIR")/bin"
+PROJECT_DIR="$(dirname "$THREADS_DIR")"
+
+# Check if auto-checkpoint is enabled
+AUTO_CHECKPOINT=$(grep "auto_create:" "$THREADS_DIR/config.yaml" 2>/dev/null | grep "true" || true)
+
+if [[ -z "$AUTO_CHECKPOINT" ]]; then
+    exit 0
+fi
+
+# Get files changed in this commit
+CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD 2>/dev/null || true)
+
+# Skip if only threads files changed
+NON_THREADS_FILES=$(echo "$CHANGED_FILES" | grep -v "^\.threads/" || true)
+
+if [[ -z "$NON_THREADS_FILES" ]]; then
+    exit 0
+fi
+
+# Count significant files (not config, not tests)
+SIGNIFICANT_FILES=$(echo "$NON_THREADS_FILES" | grep -vE "(\.md$|\.txt$|\.json$|\.yaml$|test|spec|__)" | wc -l | tr -d ' ')
+
+# Only checkpoint if significant files changed
+if [[ "$SIGNIFICANT_FILES" -gt 0 ]]; then
+    COMMIT_MSG=$(git log -1 --pretty=%B | head -1)
+    COMMIT_SHA=$(git rev-parse --short HEAD)
+
+    if [[ -x "$BIN_DIR/threads-checkpoint.sh" ]]; then
+        # Create checkpoint silently
+        "$BIN_DIR/threads-checkpoint.sh" "After commit $COMMIT_SHA: $COMMIT_MSG" >/dev/null 2>&1 || true
+    fi
+fi
+
+exit 0

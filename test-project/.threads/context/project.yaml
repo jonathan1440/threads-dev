@@ -1,0 +1,16 @@
+# Project Context
+# Accumulated knowledge about this project
+
+discovered:
+  stack: []
+  patterns: []
+  constraints: []
+
+key_files:
+  entry_points: []
+  config_files: []
+  frequently_modified: []
+
+decisions: []
+
+learnings: []

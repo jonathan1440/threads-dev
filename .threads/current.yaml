@@ -1,0 +1,25 @@
+# Current Active Context
+# This file tracks where we are in the work hierarchy
+# Updated automatically as work progresses
+
+active:
+  goal_id: null
+  plan_id: null
+  task_id: null
+  action_id: null
+
+# Session info for continuity
+session:
+  id: null
+  started: null
+  last_activity: null
+
+# Quick status (denormalized for fast access)
+status:
+  summary: "No active work"
+  phase: "idle"  # idle | planning | executing | validating | blocked
+  blocker: null
+
+# Resume context (what to tell AI on session resume)
+resume_context: |
+  No active work. Ready to start a new goal.

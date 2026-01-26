@@ -1,0 +1,54 @@
+# Action: Create User.ts file
+id: a-001
+type: action
+task_id: t-001-user-model
+plan_id: p-001-database
+goal_id: g-20250126-add-user-auth
+created: "2025-01-26T10:15:00Z"
+completed: "2025-01-26T10:18:00Z"
+
+title: "Create User.ts with class structure"
+description: |
+  Create the initial User.ts file with class definition, fields, and
+  constructor extending BaseModel.
+
+operation:
+  type: file_create
+  file: "src/models/User.ts"
+  details: "Created User class with id, email, passwordHash, createdAt, updatedAt"
+
+rationale: |
+  Start with the basic structure before adding methods. This ensures the
+  type system is happy before we add complexity.
+
+changes:
+  files_created:
+    - "src/models/User.ts"
+  files_modified: []
+  files_deleted: []
+
+status: completed
+
+outcome:
+  success: true
+  error: null
+  notes: "Clean implementation, extends BaseModel as expected"
+  issues_discovered: []
+
+confidence:
+  pre_action: 0.95
+  post_action: 0.95
+
+reversible: true
+reverse_operation:
+  type: file_delete
+  details:
+    file: "src/models/User.ts"
+
+checkpoint_id: cp-001
+
+verification:
+  syntax_valid: true
+  lint_passes: true
+  types_check: true
+  tests_pass: null  # No tests yet for this file

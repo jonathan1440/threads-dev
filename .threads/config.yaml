@@ -1,0 +1,67 @@
+# Threads Configuration
+# This file defines global behavior for the Threads workflow system
+
+version: "1.0"
+
+project:
+  name: null  # Set during initialization
+  root: "."
+
+# Confidence thresholds determine when AI proceeds vs asks human
+confidence:
+  proceed: 0.8      # Confidence >= this: proceed automatically
+  warn: 0.5         # Confidence >= this but < proceed: warn but allow
+  block: 0.3        # Confidence < this: require human input
+
+# Right-sizing determines hierarchy depth based on work scope
+right_sizing:
+  # Trivial: direct action, no goal/plan/task hierarchy
+  trivial:
+    max_files: 1
+    max_lines: 20
+    max_minutes: 5
+
+  # Small: task only, no plan layer
+  small:
+    max_files: 3
+    max_lines: 100
+    max_minutes: 30
+
+  # Medium: full hierarchy but single plan
+  medium:
+    max_files: 10
+    max_lines: 500
+    max_minutes: 180
+
+  # Large: full hierarchy, multiple plans
+  # (anything beyond medium)
+
+# Checkpoint behavior
+checkpoints:
+  auto_create: true
+  triggers:
+    - before_file_delete
+    - before_file_overwrite
+    - on_task_complete
+    - on_plan_complete
+  max_checkpoints: 50  # Prune oldest beyond this
+
+# Validation gates
+validation:
+  require_human_approval:
+    - goal_creation
+    - goal_completion
+    - destructive_file_operations
+    - external_api_calls
+    - database_migrations
+
+  automated_checks:
+    - syntax_validation
+    - lint_check
+    - type_check
+    - test_run
+
+# Session behavior
+session:
+  auto_save_interval: 60  # seconds
+  context_load_depth: 3   # how many ancestor levels to load

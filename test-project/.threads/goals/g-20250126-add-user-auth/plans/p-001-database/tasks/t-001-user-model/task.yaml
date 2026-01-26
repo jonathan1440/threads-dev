@@ -1,0 +1,95 @@
+# Task: Create User Model
+id: t-001-user-model
+type: task
+plan_id: p-001-database
+goal_id: g-20250126-add-user-auth
+created: "2025-01-26T10:15:00Z"
+updated: "2025-01-26T10:30:00Z"
+
+title: "Create User model class"
+description: |
+  Create the User model class with fields for authentication and methods
+  for password hashing/verification.
+
+why: |
+  The User model is the core data structure for authentication. It needs
+  to properly handle password security and provide a clean interface for
+  the auth service to use.
+
+deliverables:
+  - "User model class in src/models/User.ts"
+  - "Type definitions for User interface"
+  - "Password hashing using bcrypt"
+  - "Password verification method"
+
+acceptance_criteria:
+  - "User class has id, email, passwordHash, createdAt, updatedAt fields"
+  - "setPassword() method hashes password with bcrypt"
+  - "verifyPassword() method compares password to hash"
+  - "Email validation is included"
+  - "File passes linting and type checking"
+
+affected_files:
+  create:
+    - "src/models/User.ts"
+    - "src/types/User.ts"
+  modify: []
+  delete: []
+
+depends_on: []
+blocks:
+  - t-002-session-model
+  - t-004-model-tests
+
+status: in_progress
+
+progress:
+  actions_total: 4
+  actions_completed: 2
+  current_action_id: a-003
+
+blocker: null
+
+confidence:
+  pre_start: 0.9
+  current: 0.85
+  approach_clear: 0.95
+
+uncertainties: []
+
+validation:
+  automated:
+    checks:
+      - type: lint
+        command: "npm run lint src/models/User.ts"
+        status: passed
+        output: null
+      - type: typecheck
+        command: "npm run typecheck"
+        status: passed
+        output: null
+  human_required: false
+  human_review_notes: null
+
+actions:
+  - a-001
+  - a-002
+  - a-003
+
+timing:
+  started: "2025-01-26T10:15:00Z"
+  completed: null
+  estimated_minutes: 30
+  actual_minutes: null
+
+checkpoint_before: cp-001
+checkpoint_after: null
+
+context:
+  relevant_code:
+    - "Existing BaseModel in src/models/BaseModel.ts"
+  decisions_made:
+    - "Extend BaseModel for consistent interface"
+    - "Use bcrypt cost factor 12 (security vs performance balance)"
+  learnings:
+    - "Project uses class-based models, not functional"

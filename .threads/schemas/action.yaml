@@ -1,0 +1,81 @@
+# ACTION SCHEMA
+# An action is the smallest unit - a single AI operation
+# Actions are fully autonomous but logged for transparency
+# Stored in .threads/goals/{goal-id}/plans/{plan-id}/tasks/{task-id}/actions/{action-id}.yaml
+
+id: null  # Format: a-{NNN}
+type: action
+task_id: null
+plan_id: null
+goal_id: null
+created: null
+completed: null
+
+# What this action does
+title: null
+description: |
+  Brief description of what's being done.
+
+# The operation type
+operation:
+  type: null  # file_create | file_edit | file_delete | command_run | file_read | analysis
+
+  # For file operations
+  file: null
+
+  # For commands
+  command: null
+  working_directory: null
+
+  # Details of what changed
+  details: null
+
+# Why this action is needed
+rationale: |
+  Why this action is necessary for the task.
+
+# What changed (populated after completion)
+changes:
+  files_created: []
+  files_modified: []
+  # - path: "src/models/User.ts"
+  #   lines_added: 45
+  #   lines_removed: 0
+  #   summary: "Added User class with validation"
+
+  files_deleted: []
+  commands_output: []
+
+# Status
+status: pending  # pending | in_progress | completed | failed | rolled_back
+
+# Outcome (populated after completion)
+outcome:
+  success: null
+  error: null
+  notes: null
+  issues_discovered: []
+  # - "Found that existing AuthContext expects different interface"
+
+# Confidence
+confidence:
+  pre_action: null   # Confidence before doing this (0-1)
+  post_action: null  # Confidence after completion (0-1)
+
+# Reversibility
+reversible: true
+reverse_operation:
+  type: null
+  details: null
+  # Example for file_create: { type: "file_delete", file: "src/models/User.ts" }
+  # Example for file_edit: { type: "file_restore", checkpoint: "cp-003" }
+
+# Checkpoint reference
+checkpoint_id: null  # Checkpoint created before this action (if any)
+
+# Verification (immediate checks after action)
+verification:
+  syntax_valid: null
+  lint_passes: null
+  types_check: null
+  tests_pass: null
