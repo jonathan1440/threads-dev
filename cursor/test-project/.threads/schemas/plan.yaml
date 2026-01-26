@@ -1,0 +1,85 @@
+# PLAN SCHEMA
+# A plan is a coherent chunk of work, proposed by AI and approved by human
+# Copy this template to .threads/goals/{goal-id}/plans/{plan-id}/plan.yaml
+
+id: null  # Format: p-{NNN}-{slug}
+type: plan
+goal_id: null  # Parent goal reference
+created: null
+updated: null
+
+# Plan definition
+title: null
+description: |
+  What this plan will accomplish.
+
+# The approach being taken
+approach: |
+  Describe the technical approach:
+  1. First, we'll...
+  2. Then, we'll...
+  3. Finally, we'll...
+
+# Why this approach was chosen
+rationale: |
+  Explain why this approach makes sense given the constraints.
+
+# Alternatives that were considered
+alternatives_considered: []
+# - name: "Use Auth0"
+#   description: "External authentication service"
+#   rejected_because: "Adds external dependency and recurring cost"
+#   confidence_if_chosen: 0.9
+
+# - name: "Roll custom JWT implementation"
+#   description: "Build JWT handling from scratch"
+#   rejected_because: "Security risk, well-tested libraries exist"
+#   confidence_if_chosen: 0.5
+
+# Status
+status: proposed  # proposed | approved | in_progress | blocked | completed | abandoned
+approved_by: null  # "human" or null
+approved_at: null
+
+progress:
+  tasks_total: 0
+  tasks_completed: 0
+  current_task_id: null
+  percent_complete: 0
+
+# Dependencies
+depends_on: []  # Plan IDs this depends on
+blocks: []      # Plan IDs blocked by this
+
+# Confidence at plan level
+confidence:
+  approach: null         # Is this the right approach? (0-1)
+  completeness: null     # Does this cover everything needed? (0-1)
+  risk_level: null       # How risky is this plan? (0-1, higher = riskier)
+
+# Risks identified
+risks: []
+# - description: "OAuth callback might not work with current CORS setup"
+#   likelihood: medium
+#   impact: high
+#   mitigation: "Test early with actual OAuth providers"
+
+# Tasks under this plan
+tasks: []
+# - t-001-create-user-model
+# - t-002-password-hashing
+
+# Estimated effort
+estimate:
+  hours_min: null
+  hours_max: null
+  complexity: null  # low | medium | high
+
+# Context specific to this plan
+context:
+  relevant_files: []
+  key_decisions: []
+  learnings: []
+
+# Checkpoints
+checkpoints: []

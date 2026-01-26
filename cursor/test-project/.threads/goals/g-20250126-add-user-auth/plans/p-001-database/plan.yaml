@@ -1,0 +1,84 @@
+# Plan: Database Schema and Models
+id: p-001-database
+type: plan
+goal_id: g-20250126-add-user-auth
+created: "2025-01-26T10:05:00Z"
+updated: "2025-01-26T10:30:00Z"
+
+title: "Database schema and data models"
+description: |
+  Create the database tables and model classes needed for authentication.
+  This includes the users table for credentials and sessions table for
+  maintaining login state.
+
+approach: |
+  1. Create users table migration with email, password_hash, timestamps
+  2. Create sessions table migration with user_id, token, expiry
+  3. Create User model class with password hashing methods
+  4. Create Session model class with expiry checking
+  5. Write unit tests for both models
+
+rationale: |
+  Starting with the data layer first establishes the foundation for all
+  other authentication components. The models will encapsulate the
+  business logic for password hashing and session management.
+
+alternatives_considered:
+  - name: "Store sessions in users table"
+    description: "Add session_token column to users"
+    rejected_because: "Doesn't support multiple sessions (different devices)"
+    confidence_if_chosen: 0.7
+  - name: "Use existing ORM's built-in session handling"
+    description: "Many ORMs have session plugins"
+    rejected_because: "Less control, and we want to understand the mechanism"
+    confidence_if_chosen: 0.6
+
+status: in_progress
+approved_by: human
+approved_at: "2025-01-26T10:10:00Z"
+
+progress:
+  tasks_total: 5
+  tasks_completed: 1
+  current_task_id: t-001-user-model
+  percent_complete: 20
+
+depends_on: []
+blocks:
+  - p-002-auth-service
+
+confidence:
+  approach: 0.9
+  completeness: 0.85
+  risk_level: 0.2
+
+risks:
+  - description: "Migration might conflict with existing schema"
+    likelihood: low
+    impact: medium
+    mitigation: "Check existing migrations first"
+
+tasks:
+  - t-001-user-model
+  - t-002-session-model
+  - t-003-migrations
+  - t-004-model-tests
+  - t-005-verify-integration
+
+estimate:
+  hours_min: 2
+  hours_max: 3
+  complexity: medium
+
+context:
+  relevant_files:
+    - "src/models/"
+    - "migrations/"
+    - "src/db/connection.ts"
+  key_decisions:
+    - "Separate sessions table for multi-device support"
+    - "bcrypt with cost factor 12 for password hashing"
+  learnings: []
+
+checkpoints:
+  - cp-001

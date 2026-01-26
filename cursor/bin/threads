@@ -1,0 +1,346 @@
+#!/bin/bash
+# threads - Main CLI for Threads workflow system
+# Usage: threads <command> [options]
+
+set -e
+
+VERSION="1.0.0"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+GRAY='\033[0;90m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+# Get the directory where this script lives
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Find .threads directory
+find_threads_dir() {
+    local dir="$PWD"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -d "$dir/.threads" ]]; then
+            echo "$dir/.threads"
+            return 0
+        fi
+        dir="$(dirname "$dir")"
+    done
+    return 1
+}
+
+# Show help
+show_help() {
+    echo ""
+    echo -e "${BOLD}Threads${NC} - Hierarchical AI Workflow System"
+    echo -e "${GRAY}Version $VERSION${NC}"
+    echo ""
+    echo -e "${BOLD}USAGE${NC}"
+    echo "  threads <command> [options]"
+    echo ""
+    echo -e "${BOLD}COMMANDS${NC}"
+    echo ""
+    echo -e "  ${CYAN}Initialization${NC}"
+    echo "    init [dir] [name]     Initialize Threads in a directory"
+    echo ""
+    echo -e "  ${CYAN}Status & Navigation${NC}"
+    echo "    status [--detail]     Show current workflow state"
+    echo "    status --tree         ASCII tree view of all goals/plans/tasks"
+    echo "    s                     Alias for 'status'"
+    echo ""
+    echo -e "  ${CYAN}Goals${NC}"
+    echo "    goal new \"title\"      Create a new goal"
+    echo "    goal list             List all goals"
+    echo "    goal show [id]        Show goal details"
+    echo "    goal select <id>      Select a goal as active"
+    echo ""
+    echo -e "  ${CYAN}Plans${NC}"
+    echo "    plan new \"title\"      Create a plan for current goal"
+    echo "    plan list             List plans for current goal"
+    echo "    plan show [id]        Show plan details"
+    echo "    plan select <id>      Select a plan as active"
+    echo "    plan approve [id]     Approve a proposed plan"
+    echo "    plan start [id]       Start working on a plan"
+    echo ""
+    echo -e "  ${CYAN}Tasks${NC}"
+    echo "    task new \"title\"      Create a task in current plan"
+    echo "    task list             List tasks in current plan"
+    echo "    task select <id>      Select a task as active"
+    echo "    task start [id]       Start working on a task"
+    echo "    task next             Select next pending task"
+    echo ""
+    echo -e "  ${CYAN}Completion${NC}"
+    echo "    done [task|plan|goal] Mark item as complete"
+    echo "    done --failed         Mark as failed/abandoned"
+    echo ""
+    echo -e "  ${CYAN}Reflection (Self-Critique)${NC}"
+    echo "    reflect               Self-critique current work"
+    echo "    reflect --focus X     Focused critique (accuracy/clarity/completeness/security)"
+    echo "    reflect --focus criteria  Check against acceptance criteria"
+    echo ""
+    echo -e "  ${CYAN}Context & Learning${NC}"
+    echo "    context show          Show accumulated context"
+    echo "    context add <cat> \"v\" Add to context (stack/pattern/constraint/file)"
+    echo "    context decide \"d\"    Record a decision"
+    echo "    learn \"learning\"      Capture a learning"
+    echo "    learn list            List all learnings"
+    echo ""
+    echo -e "  ${CYAN}Checkpoints & Reversibility${NC}"
+    echo "    checkpoint [desc]     Create a checkpoint"
+    echo "    cp                    Alias for 'checkpoint'"
+    echo "    revert <id>           Restore from checkpoint"
+    echo "    revert --list         List available checkpoints"
+    echo ""
+    echo -e "  ${CYAN}Validation & Testing${NC}"
+    echo "    validate [--fix]      Validate YAML files"
+    echo "    test [--all]          Run validation checks"
+    echo ""
+    echo -e "  ${CYAN}Visualization & Export${NC}"
+    echo "    diagram               Generate Mermaid flowchart"
+    echo "    diagram --gantt       Generate Gantt chart"
+    echo "    diagram --state       Generate state diagram"
+    echo "    export [goal-id]      Export goal as markdown"
+    echo "    export --diagram      Include Mermaid diagram in export"
+    echo "    export --list         List available goals"
+    echo ""
+    echo -e "  ${CYAN}Git Integration${NC}"
+    echo "    hooks install         Install git hooks"
+    echo "    hooks uninstall       Remove git hooks"
+    echo ""
+    echo -e "${BOLD}EXAMPLES${NC}"
+    echo ""
+    echo "  # Initialize in current directory"
+    echo "  threads init"
+    echo ""
+    echo "  # Check current status"
+    echo "  threads status"
+    echo ""
+    echo "  # View workflow as ASCII tree"
+    echo "  threads status --tree"
+    echo ""
+    echo "  # Generate Mermaid diagram"
+    echo "  threads diagram -o workflow.md"
+    echo ""
+    echo "  # Create a new goal"
+    echo "  threads goal new 'Add user authentication'"
+    echo ""
+    echo "  # Create a plan for the goal"
+    echo "  threads plan new 'Implement OAuth flow'"
+    echo ""
+    echo "  # Approve and start the plan"
+    echo "  threads plan approve && threads plan start"
+    echo ""
+    echo "  # Create and start a task"
+    echo "  threads task new 'Set up OAuth provider'"
+    echo "  threads task start"
+    echo ""
+    echo "  # Complete the task"
+    echo "  threads done"
+    echo ""
+    echo "  # Self-critique before marking complete"
+    echo "  threads reflect --focus criteria"
+    echo ""
+    echo "  # Capture a learning"
+    echo "  threads learn 'OAuth requires HTTPS in production'"
+    echo ""
+    echo "  # Create a checkpoint before risky changes"
+    echo "  threads checkpoint 'Before refactoring auth'"
+    echo ""
+    echo "  # Revert to a checkpoint"
+    echo "  threads revert cp-001"
+    echo ""
+    echo -e "${BOLD}MORE INFO${NC}"
+    echo ""
+    echo "  threads <command> --help    Show help for a command"
+    echo "  See .threads/SKILL.md       Full documentation"
+    echo ""
+}
+
+# Show version
+show_version() {
+    echo "threads version $VERSION"
+}
+
+# Install git hooks
+install_hooks() {
+    THREADS_DIR=$(find_threads_dir) || {
+        echo -e "${RED}Error: No .threads directory found${NC}"
+        exit 1
+    }
+
+    PROJECT_DIR="$(dirname "$THREADS_DIR")"
+    GIT_DIR="$PROJECT_DIR/.git"
+
+    if [[ ! -d "$GIT_DIR" ]]; then
+        echo -e "${RED}Error: Not a git repository${NC}"
+        exit 1
+    fi
+
+    HOOKS_DIR="$GIT_DIR/hooks"
+    mkdir -p "$HOOKS_DIR"
+
+    # Install pre-commit hook
+    if [[ -f "$SCRIPT_DIR/hooks/pre-commit" ]]; then
+        cp "$SCRIPT_DIR/hooks/pre-commit" "$HOOKS_DIR/pre-commit"
+        chmod +x "$HOOKS_DIR/pre-commit"
+        echo -e "${GREEN}✓${NC} Installed pre-commit hook"
+    fi
+
+    # Install post-commit hook
+    if [[ -f "$SCRIPT_DIR/hooks/post-commit" ]]; then
+        cp "$SCRIPT_DIR/hooks/post-commit" "$HOOKS_DIR/post-commit"
+        chmod +x "$HOOKS_DIR/post-commit"
+        echo -e "${GREEN}✓${NC} Installed post-commit hook"
+    fi
+
+    echo ""
+    echo -e "${GREEN}Git hooks installed successfully${NC}"
+}
+
+# Uninstall git hooks
+uninstall_hooks() {
+    THREADS_DIR=$(find_threads_dir) || {
+        echo -e "${RED}Error: No .threads directory found${NC}"
+        exit 1
+    }
+
+    PROJECT_DIR="$(dirname "$THREADS_DIR")"
+    HOOKS_DIR="$PROJECT_DIR/.git/hooks"
+
+    if [[ -f "$HOOKS_DIR/pre-commit" ]]; then
+        # Check if it's our hook
+        if grep -q "Threads" "$HOOKS_DIR/pre-commit" 2>/dev/null; then
+            rm "$HOOKS_DIR/pre-commit"
+            echo -e "${GREEN}✓${NC} Removed pre-commit hook"
+        else
+            echo -e "${YELLOW}⚠${NC} pre-commit hook is not from Threads, skipping"
+        fi
+    fi
+
+    if [[ -f "$HOOKS_DIR/post-commit" ]]; then
+        if grep -q "Threads" "$HOOKS_DIR/post-commit" 2>/dev/null; then
+            rm "$HOOKS_DIR/post-commit"
+            echo -e "${GREEN}✓${NC} Removed post-commit hook"
+        else
+            echo -e "${YELLOW}⚠${NC} post-commit hook is not from Threads, skipping"
+        fi
+    fi
+
+    echo ""
+    echo -e "${GREEN}Git hooks uninstalled${NC}"
+}
+
+# Main command dispatch
+case "${1:-}" in
+    init)
+        shift
+        if [[ -f "$SCRIPT_DIR/../init-threads.sh" ]]; then
+            exec "$SCRIPT_DIR/../init-threads.sh" "$@"
+        else
+            echo -e "${RED}Error: init-threads.sh not found${NC}"
+            exit 1
+        fi
+        ;;
+
+    status|s)
+        shift
+        exec "$SCRIPT_DIR/threads-status.sh" "$@"
+        ;;
+
+    goal|g)
+        shift
+        exec "$SCRIPT_DIR/threads-goal.sh" "$@"
+        ;;
+
+    plan|p)
+        shift
+        exec "$SCRIPT_DIR/threads-plan.sh" "$@"
+        ;;
+
+    task|t)
+        shift
+        exec "$SCRIPT_DIR/threads-task.sh" "$@"
+        ;;
+
+    done|d)
+        shift
+        exec "$SCRIPT_DIR/threads-done.sh" "$@"
+        ;;
+
+    context|ctx)
+        shift
+        exec "$SCRIPT_DIR/threads-context.sh" "$@"
+        ;;
+
+    learn)
+        shift
+        exec "$SCRIPT_DIR/threads-learn.sh" "$@"
+        ;;
+
+    reflect)
+        shift
+        exec "$SCRIPT_DIR/threads-reflect.sh" "$@"
+        ;;
+
+    checkpoint|cp)
+        shift
+        exec "$SCRIPT_DIR/threads-checkpoint.sh" "$@"
+        ;;
+
+    revert)
+        shift
+        exec "$SCRIPT_DIR/threads-revert.sh" "$@"
+        ;;
+
+    validate)
+        shift
+        exec "$SCRIPT_DIR/threads-validate.sh" "$@"
+        ;;
+
+    test)
+        shift
+        exec "$SCRIPT_DIR/threads-test.sh" "$@"
+        ;;
+
+    diagram|diag)
+        shift
+        exec "$SCRIPT_DIR/threads-diagram.sh" "$@"
+        ;;
+
+    export)
+        shift
+        exec "$SCRIPT_DIR/threads-export.sh" "$@"
+        ;;
+
+    hooks)
+        case "${2:-}" in
+            install)
+                install_hooks
+                ;;
+            uninstall)
+                uninstall_hooks
+                ;;
+            *)
+                echo "Usage: threads hooks [install|uninstall]"
+                exit 1
+                ;;
+        esac
+        ;;
+
+    version|--version|-v)
+        show_version
+        ;;
+
+    help|--help|-h|"")
+        show_help
+        ;;
+
+    *)
+        echo -e "${RED}Unknown command: $1${NC}"
+        echo ""
+        echo "Run 'threads --help' for usage."
+        exit 1
+        ;;
+esac

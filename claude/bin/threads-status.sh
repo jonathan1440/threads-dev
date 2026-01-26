@@ -39,6 +39,7 @@ PROJECT_DIR="$(dirname "$THREADS_DIR")"
 # Parse arguments
 DETAIL_LEVEL="normal"
 OUTPUT_FORMAT="pretty"
+SHOW_TREE=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -48,6 +49,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --brief|-b)
             DETAIL_LEVEL="brief"
+            shift
+            ;;
+        --tree|-t)
+            SHOW_TREE=true
             shift
             ;;
         --json|-j)
@@ -60,6 +65,7 @@ while [[ $# -gt 0 ]]; do
             echo "Options:"
             echo "  -b, --brief    Show minimal status (one line)"
             echo "  -d, --detail   Show detailed status with actions"
+            echo "  -t, --tree     Show ASCII tree view of workflow"
             echo "  -j, --json     Output as JSON"
             echo "  -h, --help     Show this help"
             exit 0
@@ -118,6 +124,150 @@ if [[ "$OUTPUT_FORMAT" == "json" ]]; then
   }
 }
 EOF
+    exit 0
+fi
+
+# Tree output
+if [[ "$SHOW_TREE" == true ]]; then
+    echo ""
+    echo -e "${BOLD}THREADS WORKFLOW TREE${NC}"
+    echo ""
+
+    # List all goals
+    GOALS_DIR="$THREADS_DIR/goals"
+    if [[ -d "$GOALS_DIR" ]]; then
+        goal_count=0
+        goal_dirs=$(find "$GOALS_DIR" -maxdepth 1 -type d -name "g-*" 2>/dev/null | sort)
+        total_goals=$(echo "$goal_dirs" | grep -c "g-" || echo 0)
+
+        for goal_dir in $goal_dirs; do
+            goal_count=$((goal_count + 1))
+            goal_id=$(basename "$goal_dir")
+            goal_file="$goal_dir/goal.yaml"
+
+            if [[ -f "$goal_file" ]]; then
+                goal_title=$(yaml_get "$goal_file" "title")
+                goal_status=$(yaml_get "$goal_file" "status")
+
+                # Status icon
+                case "$goal_status" in
+                    completed) g_icon="✓"; g_color="$GREEN" ;;
+                    in_progress) g_icon="→"; g_color="$CYAN" ;;
+                    blocked) g_icon="✗"; g_color="$RED" ;;
+                    *) g_icon="○"; g_color="$GRAY" ;;
+                esac
+
+                # Current marker
+                current_marker=""
+                if [[ "$goal_id" == "$GOAL_ID" ]]; then
+                    current_marker=" ${YELLOW}★${NC}"
+                fi
+
+                # Tree connector
+                if [[ $goal_count -eq $total_goals ]]; then
+                    goal_prefix="└──"
+                    plan_indent="    "
+                else
+                    goal_prefix="├──"
+                    plan_indent="│   "
+                fi
+
+                echo -e "${goal_prefix} ${g_color}${g_icon}${NC} ${BOLD}Goal:${NC} ${goal_title}${current_marker}"
+
+                # List plans under this goal
+                PLANS_DIR="$goal_dir/plans"
+                if [[ -d "$PLANS_DIR" ]]; then
+                    plan_count=0
+                    plan_dirs=$(find "$PLANS_DIR" -maxdepth 1 -type d -name "p-*" 2>/dev/null | sort)
+                    total_plans=$(echo "$plan_dirs" | grep -c "p-" || echo 0)
+
+                    for plan_dir in $plan_dirs; do
+                        plan_count=$((plan_count + 1))
+                        plan_id=$(basename "$plan_dir")
+                        plan_file="$plan_dir/plan.yaml"
+
+                        if [[ -f "$plan_file" ]]; then
+                            plan_title=$(yaml_get "$plan_file" "title")
+                            plan_status=$(yaml_get "$plan_file" "status")
+
+                            case "$plan_status" in
+                                completed) p_icon="✓"; p_color="$GREEN" ;;
+                                in_progress) p_icon="→"; p_color="$CYAN" ;;
+                                approved) p_icon="◉"; p_color="$BLUE" ;;
+                                blocked) p_icon="✗"; p_color="$RED" ;;
+                                *) p_icon="○"; p_color="$GRAY" ;;
+                            esac
+
+                            plan_marker=""
+                            if [[ "$plan_id" == "$PLAN_ID" ]]; then
+                                plan_marker=" ${YELLOW}★${NC}"
+                            fi
+
+                            if [[ $plan_count -eq $total_plans ]]; then
+                                plan_prefix="└──"
+                                task_indent="    "
+                            else
+                                plan_prefix="├──"
+                                task_indent="│   "
+                            fi
+
+                            echo -e "${plan_indent}${plan_prefix} ${p_color}${p_icon}${NC} ${BOLD}Plan:${NC} ${plan_title}${plan_marker}"
+
+                            # List tasks under this plan
+                            TASKS_DIR="$plan_dir/tasks"
+                            if [[ -d "$TASKS_DIR" ]]; then
+                                task_count=0
+                                task_dirs=$(find "$TASKS_DIR" -maxdepth 1 -type d -name "t-*" 2>/dev/null | sort)
+                                total_tasks=$(echo "$task_dirs" | grep -c "t-" || echo 0)
+
+                                for task_dir in $task_dirs; do
+                                    task_count=$((task_count + 1))
+                                    task_id=$(basename "$task_dir")
+                                    task_file="$task_dir/task.yaml"
+
+                                    if [[ -f "$task_file" ]]; then
+                                        task_title=$(yaml_get "$task_file" "title")
+                                        task_status=$(yaml_get "$task_file" "status")
+
+                                        case "$task_status" in
+                                            completed) t_icon="✓"; t_color="$GREEN" ;;
+                                            in_progress) t_icon="→"; t_color="$CYAN" ;;
+                                            blocked) t_icon="✗"; t_color="$RED" ;;
+                                            failed) t_icon="✗"; t_color="$RED" ;;
+                                            *) t_icon="○"; t_color="$GRAY" ;;
+                                        esac
+
+                                        task_marker=""
+                                        if [[ "$task_id" == "$TASK_ID" ]]; then
+                                            task_marker=" ${YELLOW}★${NC}"
+                                        fi
+
+                                        if [[ $task_count -eq $total_tasks ]]; then
+                                            task_prefix="└──"
+                                        else
+                                            task_prefix="├──"
+                                        fi
+
+                                        echo -e "${plan_indent}${task_indent}${task_prefix} ${t_color}${t_icon}${NC} ${task_title}${task_marker}"
+                                    fi
+                                done
+                            fi
+                        fi
+                    done
+                fi
+            fi
+        done
+
+        if [[ $goal_count -eq 0 ]]; then
+            echo -e "${GRAY}  No goals yet. Create one with: threads goal new \"title\"${NC}"
+        fi
+    else
+        echo -e "${GRAY}  No goals yet. Create one with: threads goal new \"title\"${NC}"
+    fi
+
+    echo ""
+    echo -e "${GRAY}Legend: ○ pending  → in progress  ✓ completed  ✗ blocked/failed  ★ current${NC}"
+    echo ""
     exit 0
 fi
 

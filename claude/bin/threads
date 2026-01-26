@@ -47,7 +47,45 @@ show_help() {
     echo ""
     echo -e "  ${CYAN}Status & Navigation${NC}"
     echo "    status [--detail]     Show current workflow state"
+    echo "    status --tree         ASCII tree view of all goals/plans/tasks"
     echo "    s                     Alias for 'status'"
+    echo ""
+    echo -e "  ${CYAN}Goals${NC}"
+    echo "    goal new \"title\"      Create a new goal"
+    echo "    goal list             List all goals"
+    echo "    goal show [id]        Show goal details"
+    echo "    goal select <id>      Select a goal as active"
+    echo ""
+    echo -e "  ${CYAN}Plans${NC}"
+    echo "    plan new \"title\"      Create a plan for current goal"
+    echo "    plan list             List plans for current goal"
+    echo "    plan show [id]        Show plan details"
+    echo "    plan select <id>      Select a plan as active"
+    echo "    plan approve [id]     Approve a proposed plan"
+    echo "    plan start [id]       Start working on a plan"
+    echo ""
+    echo -e "  ${CYAN}Tasks${NC}"
+    echo "    task new \"title\"      Create a task in current plan"
+    echo "    task list             List tasks in current plan"
+    echo "    task select <id>      Select a task as active"
+    echo "    task start [id]       Start working on a task"
+    echo "    task next             Select next pending task"
+    echo ""
+    echo -e "  ${CYAN}Completion${NC}"
+    echo "    done [task|plan|goal] Mark item as complete"
+    echo "    done --failed         Mark as failed/abandoned"
+    echo ""
+    echo -e "  ${CYAN}Reflection (Self-Critique)${NC}"
+    echo "    reflect               Self-critique current work"
+    echo "    reflect --focus X     Focused critique (accuracy/clarity/completeness/security)"
+    echo "    reflect --focus criteria  Check against acceptance criteria"
+    echo ""
+    echo -e "  ${CYAN}Context & Learning${NC}"
+    echo "    context show          Show accumulated context"
+    echo "    context add <cat> \"v\" Add to context (stack/pattern/constraint/file)"
+    echo "    context decide \"d\"    Record a decision"
+    echo "    learn \"learning\"      Capture a learning"
+    echo "    learn list            List all learnings"
     echo ""
     echo -e "  ${CYAN}Checkpoints & Reversibility${NC}"
     echo "    checkpoint [desc]     Create a checkpoint"
@@ -59,8 +97,12 @@ show_help() {
     echo "    validate [--fix]      Validate YAML files"
     echo "    test [--all]          Run validation checks"
     echo ""
-    echo -e "  ${CYAN}Export & Documentation${NC}"
+    echo -e "  ${CYAN}Visualization & Export${NC}"
+    echo "    diagram               Generate Mermaid flowchart"
+    echo "    diagram --gantt       Generate Gantt chart"
+    echo "    diagram --state       Generate state diagram"
     echo "    export [goal-id]      Export goal as markdown"
+    echo "    export --diagram      Include Mermaid diagram in export"
     echo "    export --list         List available goals"
     echo ""
     echo -e "  ${CYAN}Git Integration${NC}"
@@ -75,17 +117,39 @@ show_help() {
     echo "  # Check current status"
     echo "  threads status"
     echo ""
+    echo "  # View workflow as ASCII tree"
+    echo "  threads status --tree"
+    echo ""
+    echo "  # Generate Mermaid diagram"
+    echo "  threads diagram -o workflow.md"
+    echo ""
+    echo "  # Create a new goal"
+    echo "  threads goal new 'Add user authentication'"
+    echo ""
+    echo "  # Create a plan for the goal"
+    echo "  threads plan new 'Implement OAuth flow'"
+    echo ""
+    echo "  # Approve and start the plan"
+    echo "  threads plan approve && threads plan start"
+    echo ""
+    echo "  # Create and start a task"
+    echo "  threads task new 'Set up OAuth provider'"
+    echo "  threads task start"
+    echo ""
+    echo "  # Complete the task"
+    echo "  threads done"
+    echo ""
+    echo "  # Self-critique before marking complete"
+    echo "  threads reflect --focus criteria"
+    echo ""
+    echo "  # Capture a learning"
+    echo "  threads learn 'OAuth requires HTTPS in production'"
+    echo ""
     echo "  # Create a checkpoint before risky changes"
     echo "  threads checkpoint 'Before refactoring auth'"
     echo ""
     echo "  # Revert to a checkpoint"
     echo "  threads revert cp-001"
-    echo ""
-    echo "  # Validate all YAML files"
-    echo "  threads validate"
-    echo ""
-    echo "  # Export current goal as markdown"
-    echo "  threads export -o docs/goal.md"
     echo ""
     echo -e "${BOLD}MORE INFO${NC}"
     echo ""
@@ -185,6 +249,41 @@ case "${1:-}" in
         exec "$SCRIPT_DIR/threads-status.sh" "$@"
         ;;
 
+    goal|g)
+        shift
+        exec "$SCRIPT_DIR/threads-goal.sh" "$@"
+        ;;
+
+    plan|p)
+        shift
+        exec "$SCRIPT_DIR/threads-plan.sh" "$@"
+        ;;
+
+    task|t)
+        shift
+        exec "$SCRIPT_DIR/threads-task.sh" "$@"
+        ;;
+
+    done|d)
+        shift
+        exec "$SCRIPT_DIR/threads-done.sh" "$@"
+        ;;
+
+    context|ctx)
+        shift
+        exec "$SCRIPT_DIR/threads-context.sh" "$@"
+        ;;
+
+    learn)
+        shift
+        exec "$SCRIPT_DIR/threads-learn.sh" "$@"
+        ;;
+
+    reflect)
+        shift
+        exec "$SCRIPT_DIR/threads-reflect.sh" "$@"
+        ;;
+
     checkpoint|cp)
         shift
         exec "$SCRIPT_DIR/threads-checkpoint.sh" "$@"
@@ -203,6 +302,11 @@ case "${1:-}" in
     test)
         shift
         exec "$SCRIPT_DIR/threads-test.sh" "$@"
+        ;;
+
+    diagram|diag)
+        shift
+        exec "$SCRIPT_DIR/threads-diagram.sh" "$@"
         ;;
 
     export)

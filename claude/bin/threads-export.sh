@@ -31,10 +31,14 @@ THREADS_DIR=$(find_threads_dir) || {
     exit 1
 }
 
+# Get script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # Parse arguments
 GOAL_ID=""
 OUTPUT_FILE=""
 FORMAT="md"
+INCLUDE_DIAGRAM=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -45,6 +49,10 @@ while [[ $# -gt 0 ]]; do
         --format|-f)
             FORMAT="$2"
             shift 2
+            ;;
+        --diagram|-d)
+            INCLUDE_DIAGRAM=true
+            shift
             ;;
         --list|-l)
             echo -e "${BOLD}Available goals:${NC}"
@@ -73,6 +81,7 @@ while [[ $# -gt 0 ]]; do
             echo "Options:"
             echo "  -l, --list         List available goals"
             echo "  -o, --output FILE  Write to file instead of stdout"
+            echo "  -d, --diagram      Include Mermaid diagram in export"
             echo "  -f, --format FMT   Output format: md (default), html"
             echo "  -h, --help         Show this help"
             echo ""
@@ -80,6 +89,7 @@ while [[ $# -gt 0 ]]; do
             echo "  threads-export.sh --list"
             echo "  threads-export.sh g-20250126-add-user-auth"
             echo "  threads-export.sh g-20250126-add-user-auth -o docs/auth-spec.md"
+            echo "  threads-export.sh --diagram -o workflow.md"
             exit 0
             ;;
         *)
@@ -149,6 +159,14 @@ generate_markdown() {
     echo ""
     echo "**Status:** $GOAL_STATUS | **Progress:** ${GOAL_PROGRESS:-0}% | **Created:** $GOAL_CREATED"
     echo ""
+
+    # Include diagram if requested
+    if [[ "$INCLUDE_DIAGRAM" == true ]]; then
+        echo "## Workflow Diagram"
+        echo ""
+        "$SCRIPT_DIR/threads-diagram.sh" --goal "$GOAL_ID" 2>/dev/null
+        echo ""
+    fi
 
     # Description
     DESCRIPTION=$(yaml_get_multiline "$GOAL_FILE" "description")
