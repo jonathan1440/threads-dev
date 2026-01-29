@@ -2,6 +2,21 @@
 
 AI-assisted development workflow with structured phases and verification loops.
 
+**Core premises:**
+- Process overhead should scale with task risk
+- Verification loops are non-negotiable regardless of task size
+- Institutional memory compounds value over time
+
+## Setup
+
+To add this workflow to an existing project, run from the threads-system repo:
+
+```bash
+./setup-threads.sh /path/to/your-project
+```
+
+This copies `.cursor/`, `docs/`, `CLAUDE.md`, and `THREADS-README.md` into the target directory (existing files are overwritten). After copying, edit `CLAUDE.md` for your project’s tech stack and patterns (or just start `/brainstorm`ing), and adjust `.cursor/hooks.json` if your formatter differs from the default.
+
 ## Quick Start
 
 1. **New problem?** Start with `/brainstorm`
@@ -12,50 +27,73 @@ AI-assisted development workflow with structured phases and verification loops.
 
 ## Workflow State Machine
 
+At each step, run the command on the transition. Verification (tests, lint) is part of implement/review; only slash commands are shown.
+
 ```mermaid
 stateDiagram-v2
     [*] --> Brainstorm: New work
 
-    Brainstorm --> ModeSelection: Problem understood
+    Brainstorm --> ModeSelection: /brainstorm
 
-    ModeSelection --> Sprint: Small task
-    ModeSelection --> Feature: New feature
-    ModeSelection --> Foundation: New project
+    ModeSelection --> Sprint: Small task → /sprint
+    ModeSelection --> Feature: New feature → /plan
+    ModeSelection --> Foundation: New project → /foundation
 
     state Sprint {
-        S_Plan --> S_Implement
-        S_Implement --> S_Verify
-        S_Verify --> S_Implement: Fix needed
-        S_Verify --> S_Review
-        S_Review --> S_Implement: Code fix
-        S_Review --> S_Close: Pass
+        direction LR
+        S_Do: /sprint (plan → implement → verify → review)
+        S_Close: /close
+        S_Do --> S_Close: /close
+        S_Close --> [*]: Done
     }
 
     state Feature {
-        F_Plan --> F_Implement
-        F_Implement --> F_Verify
+        direction LR
+        F_Plan: /plan
+        F_Implement: /implement
+        F_Verify: (verify)
+        F_Review: /review
+        F_Close: /close
+        F_Plan --> F_Implement: /implement
+        F_Implement --> F_Verify: (tests, lint)
         F_Verify --> F_Implement: Fix needed
-        F_Verify --> F_Review
+        F_Verify --> F_Review: /review
         F_Review --> F_Implement: Code fix
         F_Review --> F_Plan: Design fix
         F_Review --> F_Close: Pass
+        F_Close --> [*]: Done
+        F_Close --> ModeSelection: Next feature
     }
 
     state Foundation {
-        Vision --> TechDecisions
-        TechDecisions --> Architecture
-        Architecture --> DataModel
-        DataModel --> VerticalSlice
-        VerticalSlice --> Feature: Slice complete
+        direction LR
+        F_Vision: /foundation (Vision)
+        F_Tech: (Tech decisions)
+        F_Arch: (Architecture)
+        F_Data: (Data model)
+        F_Slice: (Vertical slice)
+        F_Vision --> F_Tech
+        F_Tech --> F_Arch
+        F_Arch --> F_Data
+        F_Data --> F_Slice
+        F_Slice --> F_Plan: /plan
     }
 
-    Sprint --> S_Close
-    Feature --> F_Close
-
-    S_Close --> [*]: Done
-    F_Close --> ModeSelection: Next feature
-    F_Close --> [*]: Project done
+    Sprint --> [*]: Done
+    Feature --> ModeSelection: Next feature
+    Feature --> [*]: Project done
 ```
+
+**Command at each step:**
+
+| Step | Command |
+|------|--------|
+| New work | `/brainstorm` |
+| Problem clear, small task | `/sprint` then `/close` |
+| Problem clear, new feature | `/plan` → `/implement` (repeat as needed) → `/review` → `/close` (or loop back to `/implement` / `/plan`) |
+| New project | `/foundation` (Vision → Tech decisions → Architecture → Data model → Vertical slice), then `/plan` into feature flow |
+| Done (sprint) | `/close` |
+| Done (feature) | `/close` (merge/PR/keep/discard) |
 
 ## File Structure
 
@@ -228,6 +266,48 @@ just the token refresh logic. One function, one file.
 
 What's the specific behavior that's breaking?
 ```
+
+---
+
+## Sources & Influences
+
+This workflow synthesizes principles from several cutting-edge sources on AI-assisted development:
+
+### Primary Sources
+
+**Boris Cherny** (Staff Engineer at Anthropic, Claude Code creator)
+- [Original X thread on Claude Code workflow](https://x.com/bcherny/status/2007179832300581177)
+- [Karo Zieminski's detailed breakdown](https://karozieminski.substack.com/p/boris-cherny-claude-code-workflow)
+- [InfoQ summary](https://www.infoq.com/news/2026/01/claude-code-creator-workflow/)
+
+Key concepts adopted: parallel session management, CLAUDE.md as institutional memory, plan mode before execution, verification loops as non-negotiable, slowest/smartest model preference, subagents as workflow atoms.
+
+**Armin Ronacher** (Creator of Flask)
+- [Agentic Coding Recommendations](https://lucumr.pocoo.org/2025/6/12/agentic-coding/)
+
+Key concepts adopted: tools must be fast and protected against misuse, logging as a tool for agents, language choice matters (Go recommendation), stability over churn, simple code over clever code, refactoring timing.
+
+**Addy Osmani** (Google)
+- [My LLM coding workflow going into 2026](https://addyosmani.com/blog/ai-coding-workflow/)
+
+Key concepts adopted: spec-first development, breaking work into small chunks, extensive context provision, human-in-the-loop verification, commit discipline, customizing AI behavior with rules files.
+
+### Additional Sources
+
+**Chris Dunlop** - ["Do you truly need to read the code from Cursor or Claude Code anymore?"](https://medium.com/@chrisdunlop_37984/do-you-truly-need-to-read-the-code-from-cursor-or-claude-code-anymore-87cf39abe54f)
+- Perspective on code as infrastructure vs. literature, trust battery concept, risk-stratified verification.
+
+**Marco Kotrotsos** - ["The AI Agent Race is Over"](https://medium.com/@kotrotsos)
+- Agent Skills paradigm, skills as packaged expertise, the "folder as agent" concept from Anthropic's cookbook.
+
+**ByteByteGo** - ["Top AI Agentic Workflow Patterns"](https://blog.bytebytego.com/p/top-ai-agentic-workflow-patterns)
+- Reflection pattern, ReAct pattern, planning pattern, multi-agent pattern taxonomy.
+
+### Methodology
+
+These sources were analyzed to extract common principles, evaluate effectiveness based on real-world usage (particularly Boris Cherny's workflow as the benchmark for "what the tool creator actually does"), and synthesize into a unified workflow that scales from bug fixes to greenfield projects.
+
+The core insight: process overhead should scale with task risk, verification loops are non-negotiable regardless of task size, and institutional memory compounds value over time.
 
 ---
 
