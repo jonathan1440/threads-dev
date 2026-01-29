@@ -1,0 +1,137 @@
+# Feature Review
+
+You are reviewing implemented work. This is a thorough verification gate.
+
+## Pre-Review
+
+Load `docs/specs/[feature-name]/spec.md` and `docs/specs/[feature-name]/plan.md`. Requirements for the alignment table come from the spec and the plan's tasks. Use the same `[feature-name]` as the plan/spec (or ask the user which feature is being reviewed). State which feature you're reviewing so the verdict is tied to the right artifacts.
+
+## Review Scope
+
+Specify what's being reviewed:
+- [ ] Single task
+- [ ] Checkpoint (multiple tasks)
+- [ ] Complete feature
+
+## Automated Verification
+
+Run and report:
+````bash
+# Tests
+[test command] → [PASS/FAIL]
+
+# Linting
+[lint command] → [PASS/FAIL]
+
+# Type checking (if applicable)
+[type check command] → [PASS/FAIL]
+
+# Build (if applicable)
+[build command] → [PASS/FAIL]
+````
+
+## Logical Sanity Checks
+
+Go through each check. Document your reasoning, not just pass/fail.
+
+### 1. Requirements Alignment
+````
+SPEC REQUIREMENT          │ IMPLEMENTED? │ EVIDENCE
+─────────────────────────┼──────────────┼─────────────────
+[Requirement 1]           │ Yes/No/Partial│ [Where/how]
+[Requirement 2]           │ Yes/No/Partial│ [Where/how]
+````
+
+### 2. Edge Case Analysis
+````
+EDGE CASE                 │ HANDLED? │ HOW
+─────────────────────────┼──────────┼─────────────────
+Empty input               │          │
+Null/undefined values     │          │
+Maximum size/length       │          │
+Concurrent access         │          │
+[Domain-specific cases]   │          │
+````
+
+### 3. Error Handling Audit
+````
+For each new function/endpoint:
+- What errors can occur?
+- Are they caught?
+- Are error messages helpful?
+- Do errors propagate correctly?
+````
+
+### 4. Security Checklist
+````
+- [ ] No SQL injection vulnerabilities (parameterized queries)
+- [ ] No XSS vulnerabilities (output encoding)
+- [ ] Authentication required where needed
+- [ ] Authorization checks present
+- [ ] No sensitive data in logs
+- [ ] No hardcoded secrets
+- [ ] Input validation present
+````
+
+### 5. Performance Sanity
+````
+- [ ] No N+1 queries
+- [ ] No unbounded loops over user data
+- [ ] Appropriate indexes exist (if new queries)
+- [ ] No blocking calls in async contexts
+````
+
+### 6. Code Quality
+````
+- [ ] Follows existing codebase patterns
+- [ ] No copy-paste duplication
+- [ ] Functions are reasonably sized
+- [ ] Names are clear and consistent
+- [ ] Comments explain "why" not "what"
+````
+
+### 7. Consistency Check (for multi-task reviews)
+````
+CROSS-CUTTING CONCERNS:
+- Naming conventions consistent across tasks?
+- Error handling approach consistent?
+- Logging approach consistent?
+- Test style consistent?
+````
+
+## Review Verdict
+````
+┌─────────────────────────────────────────────────────────────┐
+│ REVIEW RESULT: [PASS / FAIL / PASS WITH NOTES]              │
+├─────────────────────────────────────────────────────────────┤
+│ Automated Checks: [X/X passing]                             │
+│ Logical Checks:   [X/X passing]                             │
+├─────────────────────────────────────────────────────────────┤
+│ BLOCKING ISSUES (must fix):                                 │
+│ - [Issue 1]                                                 │
+│ - [Issue 2]                                                 │
+├─────────────────────────────────────────────────────────────┤
+│ NON-BLOCKING NOTES (should fix):                            │
+│ - [Note 1]                                                  │
+│ - [Note 2]                                                  │
+├─────────────────────────────────────────────────────────────┤
+│ NEXT ACTION:                                                │
+│ [ ] Return to IMPLEMENT (fix issues, same approach)         │
+│ [ ] Return to PLAN (rethink approach)                       │
+│ [ ] Proceed to CLOSE                                        │
+└─────────────────────────────────────────────────────────────┘
+````
+
+When the result is PASS (or PASS WITH NOTES and the user accepts), suggest running `/close` to integrate the work.
+
+## If Review Fails
+
+Document what went wrong for CLAUDE.md:
+````
+REVIEW FAILURE LOG:
+Date: [date]
+Task/Feature: [name]
+Failure Type: [Automated/Logical/Both]
+Root Cause: [Why did this slip through?]
+Prevention: [What check should we add to CLAUDE.md?]
+````

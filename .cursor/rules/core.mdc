@@ -1,0 +1,110 @@
+---
+description: Core rules loaded for all sessions
+globs: ["**/*"]
+---
+
+# Project Context
+
+Load and apply CLAUDE.md (project root) for project context: tech stack, patterns, hard rules, mistakes not to repeat. Keep that context in mind for the session.
+
+# Session Protocol
+
+1. State what mode you're operating in (Sprint/Feature/Foundation)
+2. For new feature work, complete brainstorm before plan.
+3. Reference the current spec/plan if one exists
+4. Always verify work before declaring done
+5. Update CLAUDE.md when mistakes happen
+
+# Verification Requirements
+- Tests must pass
+- Linter must pass
+- Logical sanity checks must be documented
+- For UI changes, describe what you visually verified
+
+# Commit Protocol
+- Atomic commits (one logical change per commit)
+- Descriptive messages referencing task/spec
+- Never commit failing tests
+
+# Rules File Size (Strong Recommendation)
+
+Keep total rules context under ~2,500 tokens (~150 lines across all loaded files).
+
+**Why this matters:** Larger context dilutes attention. The Claude Code team's own CLAUDE.md is 2.5k tokens. Most developers' files are 5-10x too long. Verbose rules get ignored; terse rules get followed.
+
+**What to include:**
+- Project architecture (3-5 sentences)
+- Non-negotiable constraints
+- Patterns with one-line rationale
+- Known gotchas specific to this codebase
+- Verification commands
+
+**What to exclude:**
+- Generic best practices the model already knows
+- Lengthy explanations (be terse)
+- Rules you haven't actually needed to enforce
+
+When in doubt, cut. Add rules when mistakes happen, not preemptively.
+
+# The Stuck Ladder
+
+When progress stalls for more than ~10 minutes on a single issue, escalate through these steps in order:
+
+### Level 1: Narrow the Ask
+Reduce scope to one file, one function, one behavior. The smaller the target, the better the output.
+
+### Level 2: Add a Concrete Example
+Provide explicit input/output. "Given this JSON, return this shape." Examples beat descriptions.
+
+### Level 3: Fresh Context
+Start a new session with the same problem, cleanly stated. Context accumulation causes drift.
+
+### Level 4: Switch Persona
+Before asking for code, ask an "architect" to analyze the problem. Different framing unlocks different solutions.
+
+```
+"Before we implement: as a senior architect, what are the key
+considerations and potential approaches for [problem]?"
+```
+
+### Level 5: Cut Scope
+The feature you're building may be too complex for one pass. Identify the minimal slice that delivers value. Ship that. Iterate.
+
+### Level 6: Admit Defeat (Temporarily)
+If stuck after 20+ minutes and all levels exhausted: you're likely solving the wrong problem. Return to `/brainstorm`. Reframe. The spec may be flawed.
+
+**Do not:**
+- Keep rephrasing the same prompt hoping for different results
+- Add more context indefinitely (diminishing returns after ~4k tokens)
+- Blame the model — reframe the problem instead
+
+---
+
+### The Core Loop: Plan → Implement → Review
+
+This loop operates at every scale. The difference between modes is how many iterations and how thorough each phase is.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│    ┌──────────┐      ┌─────────────┐      ┌──────────┐          │
+│    │          │      │             │      │          │          │
+│    │   PLAN   │─────▶│  IMPLEMENT  │─────▶│  REVIEW  │          │
+│    │          │      │             │      │          │          │
+│    └──────────┘      └─────────────┘      └────┬─────┘          │
+│         ▲                                      │                │
+│         │                                      │                │
+│         │         ┌─────────────┐              │                │
+│         │         │   Review    │              │                │
+│         └─────────│   Failed    │◀─────────────┘                │
+│                   │             │    NO                         │
+│                   └─────────────┘                               │
+│                                                                 │
+│                          │ YES (Review Passed)                  │
+│                          ▼                                      │
+│                   ┌─────────────┐                               │
+│                   │    CLOSE    │                               │
+│                   └─────────────┘                               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```

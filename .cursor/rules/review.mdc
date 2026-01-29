@@ -1,0 +1,26 @@
+---
+description: Rules for review and closing phases
+globs: ["**/*"]
+alwaysApply: false
+---
+
+# Review Expectations
+
+- Treat review as a hard gate before closing any task or feature.
+- Separate automated checks (tests, lint, type, build) from logical and design checks.
+- Be explicit about whether failures require returning to PLAN or IMPLEMENT.
+
+# Review Checklist (High Level)
+
+- Automated checks: tests, linter, type checking, build (if applicable) all pass.
+- Logical sanity: requirements satisfied, edge cases covered, no obvious regressions.
+- Security: input validation, authz/authn, no secrets or sensitive data leaks.
+- Performance: no N+1 queries, unbounded loops, or obvious scaling issues.
+- Consistency: naming, error handling, logging, and test style match existing patterns.
+
+# Review Outcomes
+
+- PASS: work can move to close.
+- FAIL (Implementation): fix code or tests, loop back to IMPLEMENT.
+- FAIL (Design/Requirements): update spec/plan, loop back to PLAN.
+

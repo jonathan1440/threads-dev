@@ -1,0 +1,122 @@
+---
+description: Use when encountering any bug, test failure, or unexpected behavior
+globs: ["**/*"]
+---
+
+# Systematic Debugging
+
+**Iron Law:** No fixes without root cause investigation first.
+
+If you haven't completed Phase 1, you cannot propose fixes. Symptom fixes are failure.
+
+## When to Use
+
+Use for ANY technical issue: test failures, bugs, unexpected behavior, performance problems, build failures, integration issues.
+
+**Especially when:**
+- Under time pressure (emergencies make guessing tempting)
+- "Just one quick fix" seems obvious
+- You've already tried multiple fixes
+- You don't fully understand the issue
+
+## The Four Phases
+
+### Phase 1: Root Cause Investigation
+
+**Before attempting ANY fix:**
+
+1. **Read error messages carefully** — Don't skip. Stack traces often contain the answer.
+
+2. **Reproduce consistently** — Can you trigger it reliably? If not reproducible, gather more data.
+
+3. **Check recent changes** — Git diff, recent commits, new dependencies, config changes.
+
+4. **Trace data flow** — Where does the bad value originate? What called this with bad input? Keep tracing until you find the source.
+
+**For multi-component systems:** Add diagnostic logging at each component boundary. Run once to see WHERE it breaks, THEN investigate that specific component.
+
+### Phase 2: Pattern Analysis
+
+1. **Find working examples** — Locate similar working code in same codebase.
+2. **Compare against references** — Read reference implementations completely, not skimmed.
+3. **Identify differences** — List every difference, however small.
+
+### Phase 3: Hypothesis and Testing
+
+1. **Form single hypothesis** — "I think X is the root cause because Y"
+2. **Test minimally** — Smallest possible change. One variable at a time.
+3. **Verify before continuing** — Worked? → Phase 4. Didn't work? → New hypothesis.
+
+### Phase 4: Implementation
+
+1. **Create failing test case** — Simplest reproduction. MUST have before fixing.
+2. **Implement single fix** — ONE change. No "while I'm here" improvements.
+3. **Verify fix** — Test passes? No other tests broken?
+
+**If fix doesn't work:**
+- Count how many fixes you've tried
+- If < 3: Return to Phase 1 with new information
+- **If ≥ 3: STOP and question architecture (see below)**
+
+## The 3-Fix Rule
+
+**After 3+ failed fixes:** You're likely solving the wrong problem.
+
+**Pattern indicating architectural problem:**
+- Each fix reveals new issue in different place
+- Fixes require "massive refactoring"
+- Each fix creates new symptoms elsewhere
+
+**STOP and question fundamentals:**
+- Is this pattern fundamentally sound?
+- Are we "sticking with it through inertia"?
+- Should we refactor architecture vs. continue fixing symptoms?
+
+**Discuss with human before attempting more fixes.**
+
+## Red Flags — STOP and Return to Phase 1
+
+If you catch yourself thinking:
+- "Quick fix for now, investigate later"
+- "Just try changing X and see"
+- "I'll skip the test, manually verify"
+- "It's probably X, let me fix that"
+- "I don't fully understand but this might work"
+- Proposing solutions before tracing data flow
+- "One more fix attempt" (when already tried 2+)
+
+## Supporting Techniques
+
+### Root Cause Tracing
+
+Trace backward through call chain to find original trigger:
+1. Observe symptom
+2. Find immediate cause
+3. Ask: what called this?
+4. Keep tracing up
+5. Find original trigger
+6. Fix at source, not symptom
+
+### Defense-in-Depth
+
+When you fix a bug, add validation at EVERY layer data passes through:
+- Layer 1: Entry point validation
+- Layer 2: Business logic validation
+- Layer 3: Environment guards (e.g., refuse dangerous ops in test)
+- Layer 4: Debug instrumentation
+
+Single validation can be bypassed. Multiple layers make the bug impossible.
+
+### Condition-Based Waiting
+
+Replace arbitrary timeouts with actual condition polling:
+
+```typescript
+// ❌ Guessing at timing
+await new Promise(r => setTimeout(r, 50));
+
+// ✅ Waiting for condition
+await waitFor(() => getResult() !== undefined);
+```
+
+Use when tests have arbitrary delays, are flaky, or timeout under load.

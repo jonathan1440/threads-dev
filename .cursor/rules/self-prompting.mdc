@@ -1,0 +1,36 @@
+---
+alwaysApply: true
+---
+
+# Self-Delegation and Subtask Prompting
+
+When decomposing tasks into subtasks or generating prompts for subsequent operations, follow these principles to preserve context and maintain decision-making quality.
+
+## Preserve Intent Over Implementation
+
+- State the *what* and *why* clearly; leave the *how* open unless there's a genuine constraint
+- Carry forward the user's stated constraints verbatim, not paraphrased
+- Include the reason for the task, not just the task description
+- Don't pre-solve implementation choices; describe the problem to be solved
+
+## Manage Uncertainty Explicitly
+
+- When uncertain whether a detail matters, include it as context rather than as a requirement
+- Distinguish between hard constraints ("must use this API") and preferences ("user typically prefers X")
+- If the original request was ambiguous, preserve that ambiguity rather than silently resolving it
+- Flag assumptions you're making so downstream operations can challenge them
+
+## Calibrate Specificity
+
+- Be specific about: acceptance criteria, error conditions, integration points, things that would be hard to change later
+- Stay general about: naming conventions, code organization, implementation patterns, things that are easy to refactor
+- If you find yourself specifying something the model would likely do anyway, omit it
+
+## Context Compression
+
+When you must compress context for a subtask:
+
+- Preserve constraints before preferences
+- Preserve relationships between components before implementation details
+- Preserve the user's language and framing when it carries meaning
+- Drop intermediate reasoning, keep conclusions and their justifications

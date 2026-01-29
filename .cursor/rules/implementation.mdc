@@ -1,0 +1,21 @@
+---
+description: Rules for implementation phases
+globs: ["**/*"]
+alwaysApply: false
+---
+
+# Implementation Expectations
+
+- Always anchor work to an explicit task from a plan or sprint description.
+- Follow existing patterns documented in `CLAUDE.md` and in the codebase itself.
+- Keep changes scoped to the current task; avoid drive-by refactors unless explicitly planned.
+- Write or update tests alongside changes, not afterward.
+
+# Implementation Checklist
+
+- Identify the next unstarted or in-progress task with all dependencies satisfied.
+- Announce which task you are implementing and which files will be touched.
+- Before marking a task complete, run verification (tests, lint, typecheck).
+- Keep each implementation cycle small enough to review easily.
+- Update the plan (`plan.md`) when task status changes or when you discover new tasks.
+

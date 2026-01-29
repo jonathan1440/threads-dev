@@ -1,0 +1,77 @@
+---
+description: Rules for verification (tests, lint, typecheck) during implementation
+globs: ["**/*"]
+alwaysApply: false
+---
+
+# Verification Rules
+
+Load alongside `implementation.mdc` during coding phases.
+
+## Core Principle
+
+Review catches what humans notice. Verification catches what actually breaks. Both are necessary; verification is more important.
+
+## After Every Task
+
+Before marking a task complete, run verification appropriate to the change:
+
+### Code Changes
+```
+- [ ] Tests pass: `npm test` (or equivalent)
+- [ ] Types check: `npm run typecheck` (if applicable)
+- [ ] Linter passes: `npm run lint`
+```
+
+### API Changes
+```
+- [ ] Endpoint responds correctly: `curl` or Postman
+- [ ] Error cases return expected status codes
+- [ ] Response shape matches spec
+```
+
+### UI Changes
+```
+- [ ] Renders correctly in browser
+- [ ] No console errors
+- [ ] Responsive behavior (if applicable)
+- [ ] Accessibility basics (keyboard nav, contrast)
+```
+
+### Database Changes
+```
+- [ ] Migration runs cleanly
+- [ ] Rollback works
+- [ ] Existing data unaffected (or migrated correctly)
+```
+
+## Verification Commands
+
+Add project-specific verification commands to CLAUDE.md:
+
+```markdown
+## Verification
+npm run typecheck && npm test && npm run lint
+```
+
+When in doubt, run all three. Fast feedback beats fast coding.
+
+## When Verification Fails
+
+1. Read the error message completely
+2. Fix the specific failure
+3. Re-run verification
+4. Only proceed when green
+
+Do not mark tasks complete with failing verification. Do not skip verification to save time.
+
+## Verification vs Review
+
+| Verification | Review |
+|--------------|--------|
+| Automated checks | Human/AI judgment |
+| Binary pass/fail | Subjective quality |
+| Run after every task | Run after task groups |
+| Catches breaks | Catches design issues |
+
+Both happen. Verification first, then review.

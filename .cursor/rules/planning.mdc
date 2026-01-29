@@ -1,0 +1,31 @@
+---
+description: Rules for planning phases (Feature/Foundation)
+globs: ["docs/specs/**", ".cursor/commands/plan.md"]
+alwaysApply: false
+---
+
+# Planning Mode Expectations
+
+- Create or update a spec before significant implementation.
+- Use diagrams (Mermaid) for system, data, and task dependency visualization.
+- Make tradeoffs and constraints explicit in the spec.
+- Do not start implementation until the plan is explicitly approved.
+
+# Planning Inputs
+
+When `docs/specs/[feature-name]/brainstorm.md` exists, use it as the source for problem, scope, approach, and success criteria in the spec.
+
+# Planning Outputs
+
+Every feature plan should produce:
+- `docs/specs/[feature-name]/spec.md` with problem statement, success criteria, scope, and technical context.
+- `docs/specs/[feature-name]/diagrams/*.mermaid` for architecture and data flow.
+- `docs/specs/[feature-name]/plan.md` with task breakdown, dependencies, and checkpoints.
+
+# Planning Quality Bar
+
+- Requirements are concrete and testable.
+- Risks are identified with mitigation strategies.
+- Tasks are small enough to be implemented and reviewed independently.
+- Dependencies between tasks are clearly represented (ideally with a Mermaid task graph).
+
