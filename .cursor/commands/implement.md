@@ -4,8 +4,8 @@ You are implementing a task from an approved plan.
 
 ## Pre-Implementation
 
-1. Confirm which feature you're implementing (same `[feature-name]` as the plan/spec; use the slug from `docs/specs/[feature-name]/` if it exists).
-2. Load the current plan: docs/specs/[feature-name]/plan.md
+1. Confirm which feature you're implementing (same `[feature-name]` as the spec; use the slug from `.cursor/specs/[feature-name]/` if it exists).
+2. Load the current tasks: `.cursor/specs/[feature-name]/tasks.md` (and optionally `design.md` for architecture context).
 3. Identify the next unstarted task (respecting dependencies)
 4. Confirm which task you're implementing
 
@@ -21,9 +21,10 @@ Files to touch: [list]
 ````
 
 ### 2. Implement
-- Follow existing codebase patterns (reference CLAUDE.md)
+- Follow existing codebase patterns (reference CLAUDE.md and `.cursor/foundation/` if it exists)
 - Write tests alongside implementation, not after
 - Keep changes focused on this task only
+- If implementation diverges from design (`.cursor/specs/[feature-name]/design.md`), document the as-built decision in design.md (e.g. "Deviations" or "As-built") or in the task Notes below so the spec stays coupled to the code
 
 ### 3. Self-Check Before Review
 ````
@@ -35,13 +36,13 @@ PRE-REVIEW CHECKLIST:
 - [ ] Error cases handled
 ````
 
-### 4. Update Plan
-Mark task status in plan.md:
+### 4. Update Tasks
+Mark task status in `.cursor/specs/[feature-name]/tasks.md`:
 ````markdown
 ### Task N: [Name]
 **Status**: Complete ✓
 **Actual Files Modified**: [list]
-**Notes**: [Any deviations from plan]
+**Notes**: [Any deviations from design or plan]
 ````
 
 ### 5. Checkpoint Verification
@@ -68,9 +69,9 @@ Why: [why this wasn't in the original plan]
 Suggested insertion point: [after Task N]
 Blocking: [Yes/No - is current task blocked?]
 
-Awaiting approval to update plan.
+Awaiting approval to update tasks.md.
 ````
 
-Do not implement discovered tasks without plan update and approval.
+Do not implement discovered tasks without updating `.cursor/specs/[feature-name]/tasks.md` and getting approval.
 
 When all tasks for this feature are complete, suggest running `/review` before closing.

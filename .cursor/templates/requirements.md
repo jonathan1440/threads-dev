@@ -1,5 +1,4 @@
-```markdown
-# Feature: [Name]
+# Requirements: [Feature Name]
 
 ## Problem Statement
 [What user problem does this solve? Why does it matter?]
@@ -15,15 +14,8 @@
 ### Out of Scope
 - [What we're explicitly not building]
 
-## Technical Context
-### Existing Patterns to Follow
-- [Pattern 1 from codebase]
-- [Pattern 2 from codebase]
+## Chosen Approach
+[2-3 sentences: how we decided to solve it, key tradeoffs]
 
-### Files to Modify
-- [file]: [why]
-
-### New Files to Create
-- [file]: [purpose]
-```
-
+## Constraints
+- [Technical, timeline, or other constraints]

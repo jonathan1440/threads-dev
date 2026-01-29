@@ -11,7 +11,7 @@ Load and apply CLAUDE.md (project root) for project context: tech stack, pattern
 
 1. State what mode you're operating in (Sprint/Feature/Foundation)
 2. For new feature work, complete brainstorm before plan.
-3. Reference the current spec/plan if one exists
+3. Reference the current spec (`.cursor/specs/[feature-name]/` requirements, design, tasks) if one exists
 4. Always verify work before declaring done
 5. Update CLAUDE.md when mistakes happen
 

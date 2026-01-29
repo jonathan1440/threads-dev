@@ -17,5 +17,5 @@ alwaysApply: false
 - Announce which task you are implementing and which files will be touched.
 - Before marking a task complete, run verification (tests, lint, typecheck).
 - Keep each implementation cycle small enough to review easily.
-- Update the plan (`plan.md`) when task status changes or when you discover new tasks.
+- Update the plan (`.cursor/specs/[feature-name]/tasks.md`) when task status changes or when you discover new tasks. If implementation diverges from design, document in design.md or in the task Notes.
 

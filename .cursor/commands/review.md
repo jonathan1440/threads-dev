@@ -4,7 +4,7 @@ You are reviewing implemented work. This is a thorough verification gate.
 
 ## Pre-Review
 
-Load `docs/specs/[feature-name]/spec.md` and `docs/specs/[feature-name]/plan.md`. Requirements for the alignment table come from the spec and the plan's tasks. Use the same `[feature-name]` as the plan/spec (or ask the user which feature is being reviewed). State which feature you're reviewing so the verdict is tied to the right artifacts.
+Load `.cursor/specs/[feature-name]/requirements.md`, `.cursor/specs/[feature-name]/design.md`, and `.cursor/specs/[feature-name]/tasks.md`. Requirements for the alignment table come from requirements.md and the tasks in tasks.md. Use the same `[feature-name]` as the spec (or ask the user which feature is being reviewed). State which feature you're reviewing so the verdict is tied to the right artifacts.
 
 ## Review Scope
 
@@ -124,9 +124,31 @@ CROSS-CUTTING CONCERNS:
 
 When the result is PASS (or PASS WITH NOTES and the user accepts), suggest running `/close` to integrate the work.
 
+## Append to Review Log
+
+After every review (checkpoint or full feature), append one entry to `.cursor/specs/[feature-name]/review-log.md`:
+
+````markdown
+---
+
+## Review [N]: [Checkpoint Name or "Full feature"]
+**Date**: YYYY-MM-DD
+**Verdict**: PASS | FAIL | PASS WITH NOTES
+
+**Blocking issues** (if FAIL):
+- [Issue 1]
+- [Issue 2]
+**Resolution**: [What was done, or "Pending"]
+
+**Non-blocking notes** (if any):
+- [Note, e.g. "Consider soft delete in future iteration"]
+````
+
+This creates an audit trail of what was caught, what was deferred, and why. If review fails, also add the resolution once fixes are done (on the next review entry or a short "Resolution" line).
+
 ## If Review Fails
 
-Document what went wrong for CLAUDE.md:
+Document what went wrong for CLAUDE.md (add to "Mistakes Not To Repeat" or "Prevention" as appropriate):
 ````
 REVIEW FAILURE LOG:
 Date: [date]
@@ -135,3 +157,5 @@ Failure Type: [Automated/Logical/Both]
 Root Cause: [Why did this slip through?]
 Prevention: [What check should we add to CLAUDE.md?]
 ````
+
+Include the same in the review-log.md entry so the story is in one place.

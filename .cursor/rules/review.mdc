@@ -22,5 +22,5 @@ alwaysApply: false
 
 - PASS: work can move to close.
 - FAIL (Implementation): fix code or tests, loop back to IMPLEMENT.
-- FAIL (Design/Requirements): update spec/plan, loop back to PLAN.
+- FAIL (Design/Requirements): update requirements/design/tasks in `.cursor/specs/[feature-name]/`, loop back to PLAN.
 

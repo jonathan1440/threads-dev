@@ -14,7 +14,6 @@ fi
 
 echo "Copying threads-system files into $DEST"
 cp -r "$THREADS_ROOT/.cursor" "$DEST/"
-cp -r "$THREADS_ROOT/docs" "$DEST/"
 cp "$THREADS_ROOT/CLAUDE.md" "$DEST/"
 cp "$THREADS_ROOT/README.md" "$DEST/THREADS-README.md"
 echo "Done. Edit $DEST/CLAUDE.md for your project and adjust $DEST/.cursor/hooks.json if needed."

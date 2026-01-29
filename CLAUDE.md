@@ -2,7 +2,7 @@
 
 ## What This Is
 
-This file captures patterns, decisions, and mistakes for this repo. Cursor rules (`.cursor/rules/*.mdc`) refer back here, and commands (`.cursor/commands/*.md`) assume this exists.
+This file captures patterns, decisions, and mistakes for this repo. Cursor rules (`.cursor/rules/*.mdc`) refer back here, and commands (`.cursor/commands/*.md`) assume this exists. Rewrite this section to briefly describe your project.
 
 ## Tech Stack
 
@@ -15,7 +15,7 @@ Describe or update as the project evolves:
 
 Document stable patterns you want future work to follow, for example:
 - Plan → Implement → Review loop for all non-trivial work.
-- Feature specs live under `docs/specs/[feature-name]`.
+- Feature specs live under `.cursor/specs/[feature-name]` (requirements.md, design.md, tasks.md, review-log.md). Project foundation lives under `.cursor/foundation/` (vision.md, decisions.md, architecture.md).
 - Slash commands (`/sprint`, `/plan`, `/implement`, `/review`, `/close`) correspond to `.cursor/commands` docs.
 
 Update this section as you discover patterns that work well.

@@ -15,7 +15,7 @@ To add this workflow to an existing project, run from the threads-system repo:
 ./setup-threads.sh /path/to/your-project
 ```
 
-This copies `.cursor/`, `docs/`, `CLAUDE.md`, and `THREADS-README.md` into the target directory (existing files are overwritten). After copying, edit `CLAUDE.md` for your project’s tech stack and patterns (or just start `/brainstorm`ing), and adjust `.cursor/hooks.json` if your formatter differs from the default.
+This copies `.cursor/`, `CLAUDE.md`, and `THREADS-README.md` into the target directory (existing files are overwritten). After copying, edit `CLAUDE.md` for your project’s tech stack and patterns (or just start `/brainstorm`ing), and adjust `.cursor/hooks.json` if your formatter differs from the default.
 
 ## Quick Start
 
@@ -99,36 +99,38 @@ stateDiagram-v2
 
 ```
 .cursor/
+├── foundation/               # Project-level (created by /foundation)
+│   ├── vision.md            # Mission, constraints, non-goals
+│   ├── decisions.md         # ADRs with rationale
+│   └── architecture.md      # System-level diagrams
+├── specs/                    # Feature-level (created per feature)
+│   └── [feature-name]/
+│       ├── requirements.md  # What and why
+│       ├── design.md        # How (architecture, data model, APIs)
+│       ├── tasks.md         # Execution sequence, checkpoints
+│       └── review-log.md    # Review verdicts and learnings
 ├── rules/                    # Cursor rules files
-│   ├── core.mdc             # Always-loaded (includes stuck ladder, token guidance)
-│   ├── planning.mdc         # Loaded during planning phases
-│   ├── implementation.mdc   # Loaded during coding
-│   ├── verification.mdc     # Loaded during verification
-│   ├── review.mdc           # Loaded during review phases
-│   └── debugging.mdc        # 4-phase debugging + 3-fix rule
+│   ├── core.mdc
+│   ├── planning.mdc
+│   ├── implementation.mdc
+│   ├── verification.mdc
+│   ├── review.mdc
+│   └── debugging.mdc
 ├── commands/                 # Slash commands
-│   ├── brainstorm.md        # Problem exploration (START HERE)
+│   ├── brainstorm.md
 │   ├── sprint.md
 │   ├── plan.md
 │   ├── implement.md
 │   ├── review.md
-│   └── close.md
-├── hooks.json               # PostToolUse formatting automation
+│   ├── close.md
+│   └── foundation.md
+├── hooks.json
 └── templates/
-    ├── spec.md
-    ├── plan.md
+    ├── requirements.md
+    ├── design.md
+    ├── tasks.md
+    ├── review-log.md
     └── review-checklist.md
-
-docs/
-└── specs/
-    └── [feature-name]/
-        ├── brainstorm.md    # Problem exploration output
-        ├── spec.md          # Feature specification
-        ├── plan.md          # Implementation plan
-        ├── diagrams/
-        │   └── *.mermaid
-        └── reviews/
-            └── review-[n].md
 
 CLAUDE.md                     # Institutional memory (keep under ~2.5k tokens)
 ```
@@ -225,11 +227,11 @@ What problem are we solving? When you say "notifications" - what's the
 pain point today? Are users missing important events?
 
 [Iterative conversation continues...]
-[Output saved to docs/specs/notifications/brainstorm.md]
+[Output saved to .cursor/specs/notifications/requirements.md]
 
 User: /plan notifications
 
-Assistant: Based on the brainstorm, here's the implementation plan...
+Assistant: Based on the requirements, here's the design and task breakdown...
 ```
 
 ### Sprint (Small Fix)
@@ -312,6 +314,8 @@ The core insight: process overhead should scale with task risk, verification loo
 ---
 
 ## Changelog
+
+**v3.3** - Specs under `.cursor/specs/` (requirements.md, design.md, tasks.md, review-log.md); foundation under `.cursor/foundation/` (vision.md, decisions.md, architecture.md). Three-layer structure and review log for audit trail.
 
 **v3.2** - Added systematic debugging rules (4-phase + 3-fix rule), enhanced /close with test verification and 4-option workflow
 

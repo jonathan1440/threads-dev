@@ -66,9 +66,9 @@ Ask: "Does this capture it correctly? Anything missing or wrong?"
 
 ## Output
 
-Use a short, consistent slug for this feature (e.g. from the topic: `user-notifications`, `auth-refactor`). That slug is `[feature-name]` for all paths under `docs/specs/`. If the user hasn't named it, propose one and confirm before saving.
+Use a short, consistent slug for this feature (e.g. from the topic: `user-notifications`, `auth-refactor`). That slug is `[feature-name]` for all paths under `.cursor/specs/`. If the user hasn't named it, propose one and confirm before saving.
 
-Once validated, save to `docs/specs/[feature-name]/brainstorm.md`
+Once validated, save to `.cursor/specs/[feature-name]/requirements.md` with the problem statement, scope (in/out), chosen approach, success criteria, and key constraints. This is the "what and why" layer; `/plan` will add design and tasks.
 
 This becomes input for `/plan`.
 

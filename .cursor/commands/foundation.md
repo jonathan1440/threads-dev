@@ -1,10 +1,10 @@
 # Foundation Mode: Extended Planning
 
-Foundation artifacts (Vision, tech decisions, architecture, data model, API design, vertical slice) are produced and approved in conversation; only CLAUDE.md is persisted to the repo. Optionally copy key diagrams or decisions into CLAUDE.md or a single doc under `docs/foundation/` if the team wants a paper trail.
+Foundation artifacts are produced and approved in conversation, then persisted under `.cursor/foundation/` so they travel with the repo. Create `.cursor/foundation/` if it does not exist.
 
 ## 1. Vision Document
 
-Before any technical planning:
+Before any technical planning, create `.cursor/foundation/vision.md`:
 ````markdown
 # Project Vision: [Name]
 
@@ -24,9 +24,11 @@ Before any technical planning:
 [What are we explicitly NOT trying to do?]
 ````
 
+Get approval, then save to `.cursor/foundation/vision.md`.
+
 ## 2. Technology Decisions
 
-Document major choices with rationale:
+Document major choices with rationale. Save to `.cursor/foundation/decisions.md`:
 ````
 DECISION RECORD
 
@@ -41,9 +43,9 @@ DECISION RECORD
 └─────────────┴─────────────────┴──────────────────────────────┘
 ````
 
-## 3. System Architecture
+## 3. System Architecture (and Data Model, API, Vertical Slice)
 
-High-level system diagram:
+Create or append to `.cursor/foundation/architecture.md`. Start with the high-level system diagram:
 ````mermaid
 flowchart TB
     subgraph Client["Client Layer"]
@@ -71,6 +73,8 @@ flowchart TB
     Core --> Cache
     Core --> Queue
 ````
+
+Add the following to `.cursor/foundation/architecture.md`:
 
 ## 4. Data Model
 
@@ -169,4 +173,6 @@ Create project-specific rules before any implementation:
 Foundation: Building vertical slice
 ````
 
-Only after all of the above is approved, proceed to normal Feature mode planning for the vertical slice.
+After each subsection (System Architecture, Data Model, API Design, Vertical Slice), add the content to `.cursor/foundation/architecture.md` and get approval before moving on. Optionally reference `.cursor/foundation/` from CLAUDE.md (e.g. "See .cursor/foundation/ for vision, decisions, and architecture").
+
+Only after all of the above is approved, proceed to normal Feature mode planning for the vertical slice (use `/plan` with the vertical slice as the first feature).
