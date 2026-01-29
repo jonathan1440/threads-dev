@@ -1,4 +1,4 @@
-# threads-system-v3
+# threads-dev-v3
 
 AI-assisted development workflow with structured phases and verification loops.
 
