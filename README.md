@@ -294,6 +294,11 @@ Key concepts adopted: tools must be fast and protected against misuse, logging a
 
 Key concepts adopted: spec-first development, breaking work into small chunks, extensive context provision, human-in-the-loop verification, commit discipline, customizing AI behavior with rules files.
 
+**Superpowers**
+- [Superpowers](https://github.com/obra/superpowers)
+
+Inspiration for some prompts.
+
 ### Additional Sources
 
 **Chris Dunlop** - ["Do you truly need to read the code from Cursor or Claude Code anymore?"](https://medium.com/@chrisdunlop_37984/do-you-truly-need-to-read-the-code-from-cursor-or-claude-code-anymore-87cf39abe54f)
