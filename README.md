@@ -282,7 +282,7 @@ This workflow synthesizes principles from several cutting-edge sources on AI-ass
 - [Karo Zieminski's detailed breakdown](https://karozieminski.substack.com/p/boris-cherny-claude-code-workflow)
 - [InfoQ summary](https://www.infoq.com/news/2026/01/claude-code-creator-workflow/)
 
-Key concepts adopted: parallel session management, CLAUDE.md as institutional memory, plan mode before execution, verification loops as non-negotiable, slowest/smartest model preference, subagents as workflow atoms.
+Key concepts adopted: parallel session management, CLAUDE.md as institutional memory, plan mode before execution, verification loops as non-negotiable, slowest/smartest model preference, subagents as workflow atoms, stuck ladder.
 
 **Armin Ronacher** (Creator of Flask)
 - [Agentic Coding Recommendations](https://lucumr.pocoo.org/2025/6/12/agentic-coding/)
@@ -294,7 +294,7 @@ Key concepts adopted: tools must be fast and protected against misuse, logging a
 
 Key concepts adopted: spec-first development, breaking work into small chunks, extensive context provision, human-in-the-loop verification, commit discipline, customizing AI behavior with rules files.
 
-**Superpowers**
+**Superpowers** (Jesse Vincent)
 - [Superpowers](https://github.com/obra/superpowers)
 
 Inspiration for some prompts.
@@ -317,6 +317,18 @@ These sources were analyzed to extract common principles, evaluate effectiveness
 The core insight: process overhead should scale with task risk, verification loops are non-negotiable regardless of task size, and institutional memory compounds value over time.
 
 ---
+
+## License
+
+This project is licensed under the GNU General Public License v3.0 (GPLv3). This means:
+
+- You can use, modify, and distribute this workflow freely
+- If you distribute modified versions, you must release the source code under GPLv3
+- Any derivative works must also be GPLv3-licensed
+
+The license ensures that improvements remain publicly available. Organization-specific configurations (custom CLAUDE.md files, specific hooks, internal templates) can be kept private - only modifications to the core workflow structure itself require sharing.
+
+See the [LICENSE](LICENSE) file for full terms.
 
 ## Changelog
 

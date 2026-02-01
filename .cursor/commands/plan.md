@@ -73,6 +73,14 @@ Save diagrams as mermaid code blocks in design.md (or to `.cursor/specs/[feature
 
 Create `.cursor/specs/[feature-name]/tasks.md`:
 
+Break down the feature into tasks, ensuring each task:
+- Has clear input/output contracts (schemas, examples)
+- Includes specific verification criteria (testable predicates, not intentions)
+- Splits at decision boundaries, not arbitrary size limits
+- Covers edge cases from requirements.md
+
+Use the template structure with Purpose, Input Contract, Output Contract, Requirements, Implementation Constraints, Files, Verification, and Edge Cases.
+
 ````markdown
 # Tasks: [Feature Name]
 
@@ -90,12 +98,20 @@ flowchart TD
 
 ## Tasks
 
-### Task 1: [Name]
+### Task 1: [Name - specific capability]
 **Status**: Not Started
 **Depends On**: None
-**Description**: [What this task accomplishes]
-**Files**: [Files to create/modify]
-**Verification**: [How we know it's done]
+**Purpose**: [Why this task exists]
+**Input Contract**: [Explicit prerequisites]
+**Output Contract**: [Explicit artifacts and state changes]
+**Requirements**: [Must-haves and must-not-haves]
+**Implementation Constraints**: [Technology/performance requirements if any]
+**Files**: [Specific paths to create/modify]
+**Verification**:
+1. [Automated tests with concrete scenarios]
+2. [Integration checks]
+3. [Performance checks if relevant]
+**Edge Cases**: [Boundary conditions to handle]
 **Estimated Complexity**: Low/Medium/High
 
 ### Task 2: [Name]
@@ -107,6 +123,25 @@ After Task 2: Verify data layer works in isolation
 After Task 4: Verify API contract matches design
 After Task 6: Full integration verification
 ````
+
+## Step 4.5: Validate Tasks
+
+Before presenting the plan, validate each task:
+
+**For each task, verify:**
+- [ ] Input and output contracts are explicit (schemas or examples provided)
+- [ ] Verification includes at least one concrete, automated test scenario
+- [ ] If complexity is High, consider whether it can split at a decision boundary
+- [ ] Edge cases from requirements.md are addressed in verification steps
+- [ ] "Verification" contains falsifiable predicates, not vague intentions like "works correctly"
+
+**Common issues to fix:**
+- Vague verification: "Unit tests pass" → Specify which test scenarios
+- Missing contracts: Add explicit schemas for inputs/outputs
+- Oversized tasks: If a task has 3+ distinct decision points, split it
+- Ambiguous edge cases: Document expected behavior for null/empty/boundary inputs
+
+If any task fails validation, refine it before proceeding.
 
 ## Step 5: Initialize Review Log
 
@@ -120,10 +155,16 @@ Create `.cursor/specs/[feature-name]/review-log.md` if it does not exist:
 
 ## Step 6: Present and Iterate
 
-Present the complete plan (requirements, design, tasks) with all diagrams. Ask:
+Present the complete plan (requirements, design, tasks) with all diagrams. Confirm that:
+1. All tasks passed validation (Step 4.5)
+2. Architecture aligns with requirements and existing patterns
+3. Task dependencies are correct
+4. Verification criteria are specific and falsifiable
+
+Ask the user:
 1. Does the architecture make sense?
-2. Are there missing tasks?
-3. Are the dependencies correct?
+2. Are there missing tasks or edge cases?
+3. Are the task boundaries appropriate (not too large, not over-prescribed)?
 4. Any concerns about the approach?
 
 Iterate on the plan until approved. Do not proceed to implementation until explicit approval.
